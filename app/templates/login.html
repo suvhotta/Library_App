@@ -1,0 +1,38 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <legend class="m-4 d-flex justify-content-center "><h3><u>Please enter your Credentials</u></h3></legend>
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <div class="form-group">
+            {{form.login_field.label}}
+            {%if form.login_field.errors%}
+                {{form.login_field(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.login_field.errors%}
+                    <span>{{errors}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.login_field(class="form-control form-control-lg")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.password.label}}
+            {%if form.password.errors%}
+                {{form.password(class="form-control-lg form-control is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in errors%}
+                    <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.password(class="form-control form-control-lg")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.submit(class="btn btn-success")}}
+        </div>
+    </form>
+</div>
+{%endblock%}

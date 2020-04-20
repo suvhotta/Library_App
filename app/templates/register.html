@@ -1,0 +1,77 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <legend class="m-4 d-flex justify-content-center "><h3><u>Register for a new Library Account</u></h3></legend>
+    <form method="POST" action="">
+        {{form.hidden_tag()}}
+        <div class="form-group">
+            {{form.name.label}}
+            {% if form.name.errors%}
+                {{form.name(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.name.errors%}
+                        <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.name(class="form-control form-control-lg",placeholder="Full name goes here")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.username.label}}
+            {% if form.username.errors%}
+                {{form.username(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.username.errors%}
+                        <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.username(class="form-control form-control-lg",placeholder="Atlease 4 characters")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.email.label}}
+            {%if form.email.errors%}
+                {{form.email(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.email.errors%}
+                    <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.email(class="form-control form-control-lg",placeholder="Don't enter your friend's id")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.password.label}}
+            {%if form.password.errors%}
+                {{form.password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.password.errors%}
+                    <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.password(class="form-control form-control-lg",placeholder="Choose a strong one")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.confirm_pwd.label}}
+            {%if form.confirm_pwd.errors%}
+                {{form.confirm_pwd(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.confirm_pwd.errors%}
+                    <span>{{error}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.confirm_pwd(class="form-control form-control-lg",placeholder="Match the upper one")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.submit(class="btn btn-info")}}
+        </div>
+    </form>
+</div>
+{%endblock%}
