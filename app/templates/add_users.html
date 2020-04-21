@@ -1,0 +1,35 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Username</th>
+          </tr>
+        </thead>
+        <tbody>
+          <p>Click on the user's username to redirect to the add the user.</p>
+            {%for user in users%}
+            <tr>
+              <th id="#row-number" scope="row">1</th>
+              <td><a href="#">{{user.name}}</a></td>
+              <td><a href="#">{{user.email}}</a></td>
+              <td><a href="#">{{user.username}}</a></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+      </table>
+</div>
+<script>
+  const table = document.querySelector('.table')
+  const rowCount = table.rows.length;
+  let i=1
+  for(i;i<rowCount;i++){
+    table.rows[i].getElementsByTagName("th")[0].textContent = i
+  }
+</script>
+
+{%endblock%}

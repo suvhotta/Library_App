@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, SubmitField, StringField, PasswordField
+from wtforms import BooleanField, SubmitField, StringField, PasswordField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from app.models import User
 
@@ -8,6 +8,7 @@ class RegistrationForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=1, max=30)])
     username = StringField('Username', validators=[DataRequired(),Length(min=4, max=10, message="Username must be between 4 and 10 characters long.")])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=30)])
+    role = SelectField('Designation', validators=[DataRequired()], choices=[('Librarian', 'Librarian'), ('Faculty', 'Faculty'), ('Student', 'Student')])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, message="Password should be atleast 4 characters long.")])
     confirm_pwd = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Should be same as the entered password.")])
     submit = SubmitField('Register')
@@ -28,3 +29,11 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+class AccountUpdation(FlaskForm):
+    name = StringField('Full Name', validators=[DataRequired(), Length(min=1, max=30)])
+    username = StringField('Username', validators=[DataRequired(),Length(min=4, max=10, message="Username must be between 4 and 10 characters long.")])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=30)])
+    role = SelectField('Designation', validators=[DataRequired()], choices=[('Librarian', 'Librarian'), ('Faculty', 'Faculty'), ('Student', 'Student')])
+    fine = IntegerField('Total Fine', validators=[DataRequired()])
+    account_state = StringField('Account Status', validators=[DataRequired(),Length(max=10)])
