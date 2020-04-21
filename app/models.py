@@ -1,4 +1,5 @@
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
 
 class Books(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -14,7 +15,7 @@ class Books(db.Model):
         return f'<Book-title: {self.title} , ISBN:{self.isbn}>'
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
     username = db.Column(db.String(10), nullable=False)
@@ -25,3 +26,8 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User: {self.username}, {self.email}>'
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
