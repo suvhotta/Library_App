@@ -36,4 +36,5 @@ class AccountUpdation(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=30)])
     role = SelectField('Designation', validators=[DataRequired()], choices=[('Librarian', 'Librarian'), ('Faculty', 'Faculty'), ('Student', 'Student')])
     fine = IntegerField('Total Fine', validators=[DataRequired()])
-    account_state = StringField('Account Status', validators=[DataRequired(),Length(max=10)])
+    account_state = SelectField('Account Status', validators=[DataRequired()], choices=[('disabled', 'disabled'), ('enabled', 'enabled')])
+    submit = SubmitField('Create Account')

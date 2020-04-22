@@ -2,7 +2,7 @@
 {%block content%}
 <div class="container">
     <h6 div class="d-flex justify-content-center lead mb-3" style="font-family: serif">
-      Clicking on the username will redirect to the Adding the user.
+      Clicking on the username will redirect to the Deleting the user.    
     </h6>
     <table class="table">
         <thead>
@@ -19,18 +19,17 @@
               <th id="#row-number" scope="row"></th>
               <td><a >{{user.name}}</a></td>
               <td><a >{{user.email}}</a></td>
-              <td><a href="{{url_for('manage_accounts_add', username=user.username)}}">{{user.username}}</a></td>
+              <td><a href="{{url_for('manage_accounts_delete', username=user.username)}}">{{user.username}}</a></td>
             </tr>
             {%endfor%}
         </tbody>
       </table>
 </div>
 <script>
-  const table = document.querySelector('.table')
-  const rowCount = table.rows.length;
-  let i=1
-  for(i;i<rowCount;i++){
-    table.rows[i].getElementsByTagName("th")[0].textContent = i
-  }
+    const table = document.querySelector('.table')
+    let i=1
+    for(i;i<table.rows.length;i++){
+        table.rows[i].getElementsByTagName("th")[0].textContent = i
+    }
 </script>
 {%endblock%}

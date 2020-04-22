@@ -1,0 +1,56 @@
+{%extends "base.html"%}
+{%block content%}
+    <div class="container">
+        <legend class="m-4 d-flex justify-content-center "><h3><u>Approve User Account</u></h3></legend>
+        <form action="" method="POST">
+            {{form.hidden_tag()}}
+            <div class="form-group">
+                {{form.name.label}}
+                {{form.name(class="form-control form-control-lg", readonly=true)}}
+            </div>
+            <div class="form-group">
+                {{form.username.label}}
+                {{form.username(class="form-control form-control-lg", readonly=true)}}
+            </div>
+            <div class="form-group">
+                {{form.email.label}}
+                {{form.email(class="form-control form-control-lg", readonly=true)}}
+            </div>
+            <div class="form-group">
+                {{form.role.label}}
+                {{form.role(class="form-control form-control-lg")}}
+            </div>
+            <div class="form-group">
+                {{form.fine.label}}
+                {{form.fine(class="form-control form-control-lg")}}
+            </div>
+            <div class="form-group" >
+                {{form.account_state.label}}
+                {{form.account_state(class="form-control form-control-lg",id="select")}}
+            </div>
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Please Change the account status to enabled to add a new member.    
+            </small>
+            <div class="form-group mt-4">
+                {{form.submit(class="btn btn-success")}}
+            </div>
+        </form>
+    </div>
+<script>
+    const selected= document.getElementById('select')
+    if(selected.value=="disabled"){
+        selected.style.backgroundColor= "#ff8566"
+        selected.style.color = "white"
+    }
+    selected.addEventListener("change",()=>{
+        if(selected.value=="disabled"){
+        selected.style.backgroundColor="#ff8566"
+        selected.style.color = "white"
+    }
+        else{
+        selected.style.backgroundColor= "#c2f0c2"
+        selected.style.color = "black"
+    }
+    })
+</script>
+{%endblock%}

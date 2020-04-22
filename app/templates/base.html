@@ -10,7 +10,7 @@
             <title>Central Library</title>
         {%endif%}
     </head>
-    <body >
+    <body>
         <div class="container mt-2" id="top-logo">
             <div class="d-flex justify-content-center lead " style="font-family: serif"><h1><i class="fas fa-book-open p-0 mr-4"></i> Central Library</h1></div>
         </div>
@@ -34,7 +34,7 @@
               <li class="nav-item">
                 <a class="nav-link top-bar" href="{{url_for('about')}}">About</a>
               </li>
-              {%if current_user.roles == 'Librarian'%}
+              {%if current_user.role == 'Librarian'%}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle top-bar" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Manage Accounts
@@ -42,7 +42,7 @@
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{url_for('manage_accounts_add')}}">Add Users</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Delete Users</a>
+                    <a class="dropdown-item" href="{{url_for('manage_accounts_delete')}}">Delete Users</a>
                   </div>
                 </li>
                 {%endif%}
@@ -63,9 +63,10 @@
               {%endif%}
             </ul>
         </nav>
-        <div class="container mt-2" id="top-flash">
+        
           {%with messages = get_flashed_messages(with_categories=true)%}
             {%if messages%}
+            <div class="container mt-2" id="top-flash">
               {%for category,message in messages%}
                 <div class="alert alert-{{category}}">{{message}}</div>
               {%endfor%}
@@ -78,6 +79,9 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script>
-  setTimeout(()=>document.getElementById('top-flash').remove(),5500)
+  const topFlashMessage = document.getElementById('top-flash')
+  if(topFlashMessage){
+    setTimeout(()=>topFlashMessage.remove(),5500)
+  }
 </script>
 </html>

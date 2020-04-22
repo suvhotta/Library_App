@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    roles = db.Column(db.String(10), nullable=False)
+    role = db.Column(db.String(10), nullable=False)
     image_file = db.Column(db.String(40), nullable=False, default="default.jpg")
     fine = db.Column(db.Integer, default=0, nullable=False)
     account_state = db.Column(db.String(10),default='disabled', nullable=False)
