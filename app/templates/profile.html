@@ -1,0 +1,72 @@
+{%extends "base.html"%}
+{%block content%}
+    <div class="container mt-4 border-2">
+        <div class="media">
+            <img class="rounded-circle account-img mr-4" src="{{image_file}}">
+            <div class="media-body">
+                <h2 class="account-heading">{{current_user.username}}</h2>
+                <p class="text-secondary">{{current_user.email}}</p>
+            </div>
+        </div>
+        <legend class="m-4 d-flex justify-content-center "><h3><u>My Profile Details</u></h3></legend>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{form.hidden_tag()}}
+            <div class="form-group">
+                {{form.name.label}}
+                {%if form.name.errors%}
+                    {{form.name(class="form-control form-control-lg is-invalid")}}
+                    {%for error in form.name.errors%}
+                    <div class="invalid-feedback"><span>{{error}}</span></div>
+                    {%endfor%}
+                {%else%}
+                    {{form.name(class="form-control form-control-lg")}}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                {{form.username.label}}
+                {%if form.username.errors%}
+                    {{form.username(class="form-control form-control-lg is-invalid")}}
+                    {%for error in form.username.errors%}
+                    <div class="invalid-feedback"><span>{{error}}</span></div>
+                    {%endfor%}
+                {%else%}
+                    {{form.username(class="form-control form-control-lg")}}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                {{form.email.label}}
+                {%if form.email.errors%}
+                    {{form.email(class="form-control form-control-lg is-invalid")}}
+                    {%for error in form.email.errors%}
+                    <div class="invalid-feedback"><span>{{error}}</span></div>
+                    {%endfor%}
+                {%else%}
+                    {{form.email(class="form-control form-control-lg")}}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                {{form.role.label}}
+                {{form.role(class="form-control form-control-lg", readonly=true)}}
+            </div>
+            <div class="form-group">
+                {{form.fine.label}}
+                {{form.fine(class="form-control form-control-lg", readonly=true)}}
+            </div>
+            <div class="form-group">
+                {{form.image_file.label}}
+                {{form.image_file(class="form-control-file")}}
+                {%if form.image_file.errors%}
+                    {%for error in form.image_file.errors%}
+                        <span class="text-danger">{{error}}</span><br>
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                After editing the details click on Update.    
+            </small>
+            <div class="form-group mt-4">
+                {{form.submit(class="btn btn-info")}}
+            </div>
+        </form>
+    </div>
+{%endblock%}

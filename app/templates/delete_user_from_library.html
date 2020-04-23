@@ -4,6 +4,9 @@
         <legend class="m-4 d-flex justify-content-center "><h3><u>Delete User Account</u></h3></legend>
         <form action="" method="POST">
             {{form.hidden_tag()}}
+            <div class="media">
+                <img class="rounded-circle account-img mr-4" src="{{image_file}}">
+            </div>
             <div class="form-group">
                 {{form.name.label}}
                 {{form.name(class="form-control form-control-lg", readonly=true)}}

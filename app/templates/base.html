@@ -42,21 +42,25 @@
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{url_for('manage_accounts_add')}}">Add Users</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{url_for('manage_accounts_delete')}}">Delete Users</a>
+                    <a class="dropdown-item" href="{{url_for('manage_accounts_delete')}}">Remove Users</a>
                   </div>
                 </li>
                 {%endif%}
             </ul>
 
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <a class="nav-link top-bar"  href="{{url_for('register')}}">Register</a>
-              </li>
+              
               {%if current_user.is_authenticated%}
+                <li class="nav-item">
+                  <a class="nav-link top-bar"  href="{{url_for('profile')}}">Profile</a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link top-bar"  href="{{url_for('logout')}}">Logout</a>
                 </li>
               {%else%}
+              <li class="nav-item">
+                <a class="nav-link top-bar"  href="{{url_for('register')}}">Register</a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link top-bar"  href="{{url_for('login')}}">Login</a>
               </li>
@@ -81,7 +85,7 @@
 <script>
   const topFlashMessage = document.getElementById('top-flash')
   if(topFlashMessage){
-    setTimeout(()=>topFlashMessage.remove(),5500)
+    setTimeout(()=>topFlashMessage.remove(),4000)
   }
 </script>
 </html>
