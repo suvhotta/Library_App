@@ -45,6 +45,29 @@
                     <a class="dropdown-item" href="{{url_for('manage_accounts_delete')}}">Remove Users</a>
                   </div>
                 </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle top-bar" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Dropdown1
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li class="dropdown-item dropdown">
+                          <a class="dropdown-toggle" id="dropdown1-1" data-toggle="dropdown"
+                             aria-haspopup="true" aria-expanded="false">Dropdown1.1</a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdown1-1">
+                              <li class="dropdown-item"><a href="#">Action 1.1</a></li>
+                              <li class="dropdown-item dropdown">
+                                  <a class="dropdown-toggle" id="dropdown1-1-1" data-toggle="dropdown"
+                                     aria-haspopup="true" aria-expanded="false">Dropdown1.1.1</a>
+                                  <ul class="dropdown-menu" aria-labelledby="dropdown1-1-1">
+                                      <li class="dropdown-item"><a target="_blank"
+                                                                   href="http://www.google.com">Action 1.1.1 -
+                                          Google</a></li>
+                                  </ul>
+                              </li>
+                          </ul>
+                      </li>
+                  </ul>
+              </li>
                 {%endif%}
             </ul>
 
@@ -87,5 +110,35 @@
   if(topFlashMessage){
     setTimeout(()=>topFlashMessage.remove(),4000)
   }
+  $(document).ready(function () {
+
+$('.navbar .dropdown-item').on('click', function (e) {
+    var $el = $(this).children('.dropdown-toggle');
+    var $parent = $el.offsetParent(".dropdown-menu");
+    $(this).parent("li").toggleClass('open');
+
+    if (!$parent.parent().hasClass('navbar-nav')) {
+        if ($parent.hasClass('show')) {
+            $parent.removeClass('show');
+            $el.next().removeClass('show');
+            $el.next().css({"top": -999, "left": -999});
+        } else {
+            $parent.parent().find('.show').removeClass('show');
+            $parent.addClass('show');
+            $el.next().addClass('show');
+            $el.next().css({"top": $el[0].offsetTop, "left": $parent.outerWidth() - 4});
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+$('.navbar .dropdown').on('hidden.bs.dropdown', function () {
+    $(this).find('li.dropdown').removeClass('show open');
+    $(this).find('ul.dropdown-menu').removeClass('show open');
+});
+
+});
+
 </script>
 </html>

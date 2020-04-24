@@ -1,18 +1,26 @@
-from app import db, login_manager
+from app import app, db, login_manager
 from flask_login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 class Books(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     isbn = db.Column(db.BigInteger, nullable=False)
     description = db.Column(db.String(300), default="New Book added")
+    pages = db.Column(db.Integer, nullable=False)
     author = db.Column(db.PickleType, nullable=False)
     category = db.Column(db.PickleType, nullable=False)
     language = db.Column(db.String(20), nullable=False)
-    copies = db.Column(db.Integer, default=1)
-
+    num_copies = db.Column(db.Integer, default=1)
+    copies = db.relationship('BookCopies', backref="book", cascade="all,delete-orphan", lazy="dynamic")
     def __repr__(self):
         return f'<Book-title: {self.title} , ISBN:{self.isbn}>'
+
+class BookCopies(db.Model):
+    book_copy_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), nullable=False)
+    #Defining the foreign key to connect the copies to the parent book table
+    book_id = db.Column(db.Integer,db.ForeignKey('books.id'))
 
 
 class User(db.Model, UserMixin):
@@ -28,6 +36,20 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'<User: {self.username}, {self.email}>'
 
+    def get_reset_token(self):
+        s = Serializer(app.config["SECRET_KEY"])
+        return s.dumps({'user_id':self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token,expires_sec=300):
+        s = Serializer(app.config["SECRET_KEY"],expires_sec)
+        try:
+            user_id = s.loads(token)['user_id']
+
+        except:
+            return None
+
+        return User.query.get(user_id)
 
 @login_manager.user_loader
 def load_user(id):

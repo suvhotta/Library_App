@@ -1,12 +1,15 @@
 from flask import url_for, redirect, render_template, request, flash
 from app import app, bcrypt, db
-from app.forms import RegistrationForm, LoginForm, AccountUpdation, UpdateProfile
+from app.forms import (RegistrationForm, LoginForm, AccountUpdation, 
+UpdateProfile, RequestResetForm, ResetPasswordForm)
 from app.models import User
 from sqlalchemy import or_, and_
 from flask_login import current_user, login_user, login_required, logout_user
 from datetime import timedelta
 import smtplib, inspect, os
 from PIL import Image
+from threading import Thread
+
 
 @app.route('/')
 def index():
@@ -24,7 +27,6 @@ def register():
         return redirect(url_for('index'))
 
     if(request.method == 'POST' and form.validate_on_submit()):
-        
         # Hashing the password and decoding is part of syntax for python-3.
         hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(name=form.name.data, username=form.username.data, email=form.email.data,
@@ -123,7 +125,7 @@ def manage_accounts_add(username):
 #             flash(f'Account for User : <{user.username}> has been activated.', "success")
 #         return render_template(url_for("manage_accounts_add_user"))
 
-@app.route('/manage_accounts/remove_user/<username>', methods=["GET","POST"])
+@app.route('/manage_accounts/remove_user/<username>', methods=["GET", "POST"])
 @app.route('/manage_accounts/remove_user/', defaults={"username":None})
 @login_required
 def manage_accounts_delete(username):
@@ -220,3 +222,61 @@ def profile():
         form.fine.data = current_user.fine
     image_file = url_for("static", filename = "profile_pics/"+current_user.image_file)
     return render_template("profile.html", image_file=image_file, form=form)
+
+def async_mail(app, body, subject, user_mail):
+    with app.app_context():
+        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
+            email_address = 'madrid1902fan@gmail.com'
+            email_password = 'madrid1902'
+            smtp.login(email_address, email_password)    
+            msg = f'Subject:{subject}\n\n{body}'
+            sender_mail = "noreply@demo.com"
+            smtp.sendmail(sender_mail, user_mail, msg)
+
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_passsword_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email = form.email.data).first()
+        if user:
+            token = user.get_reset_token()
+            body = f'''To reset your password, visit the following link : 
+            {url_for('reset_password',token=token,_external=True)} 
+            If you did not make this request then simply ignore this mail and no changes will be done.'''
+            subject = "Central Library - Password Reset Request"
+            
+            #The _external is set to True to identify that it is an active url rather than a relative url like in flask# 
+            thr = Thread(target=async_mail, args = (app, body, subject, user.email))
+            thr.start()
+            flash("A password reset link has been sent to your email-address.", "info")
+            return redirect(url_for('login'))
+    return render_template('reset_request.html', form=form)
+
+@app.route("/reset_password/<token>", methods=["GET","POST"])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash("That token is invalid or has expired!", "warning")
+        return redirect(url_for("reset_password_request"))
+
+    form = ResetPasswordForm()
+    if(request.method == 'POST' and form.validate_on_submit()):
+        # Hashing the password and decoding is part of syntax for python-3.
+        hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_pwd
+        db.session.commit()
+        flash("Your Password has been Updated.", 'success')
+        return redirect(url_for('login'))
+    return render_template("reset_password.html", form=form)
+
+    
+

@@ -1,0 +1,26 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <legend class="m-4 d-flex justify-content-center "><h3><u>Reset Password</u></h3></legend>
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <div class="form-group">
+            {{form.email.label}}
+            {%if form.email.errors%}
+                {{form.email(class="form-control form-control-lg is-invalid",placeholder="You still remember it right?")}}
+                <div class="invalid-feedback">
+                    {%for error in form.email.errors%}
+                    <span>{{errors}}</span>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.email(class="form-control form-control-lg",placeholder="You still remember it right?")}}
+            {%endif%}
+        </div>
+        
+        <div class="form-group">
+            {{form.submit(class="btn btn-info")}}
+        </div>
+    </form>
+</div>
+{%endblock%}

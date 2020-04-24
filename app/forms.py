@@ -32,6 +32,7 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+
 class AccountUpdation(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=1, max=30)])
     username = StringField('Username', validators=[DataRequired(),Length(min=4, max=10, message="Username must be between 4 and 10 characters long.")])
@@ -40,6 +41,7 @@ class AccountUpdation(FlaskForm):
     fine = IntegerField('Total Fine', validators=[DataRequired()])
     account_state = SelectField('Account Status', validators=[DataRequired()], choices=[('disabled', 'disabled'), ('enabled', 'enabled')])
     submit = SubmitField('Create Account')
+
 
 class UpdateProfile(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=1, max=30)])
@@ -61,3 +63,14 @@ class UpdateProfile(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('Email is already in use. Please choose a different one.')
+
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=30)])
+    submit = SubmitField('Request Password Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=4, message="Password should be atleast 4 characters long.")])
+    confirm_pwd = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Should be same as the entered password.")])
+    submit = SubmitField('Reset Password')
