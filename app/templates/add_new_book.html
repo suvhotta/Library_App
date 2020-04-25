@@ -1,0 +1,115 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container mt-3">
+    <form action="" method="POST">
+        {{form.hidden_tag()}}
+        <div class="form-group">
+            {{form.title.label}}
+            {% if form.title.errors%}
+                {{form.title(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.title.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.title(class="form-control form-control-lg",placeholder="Book's Title")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.isbn.label}}
+            {% if form.isbn.errors%}
+                {{form.isbn(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.isbn.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.isbn(class="form-control form-control-lg",placeholder="Book's ISBN")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.description.label}}
+            {% if form.description.errors%}
+                {{form.description(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.description.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.description(class="form-control form-control-lg",placeholder="Short Description")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.pages.label}}
+            {% if form.pages.errors%}
+                {{form.pages(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.pages.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.pages(class="form-control form-control-lg",placeholder="Num of Pages")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.author.label}}
+            {% if form.author.errors%}
+                {{form.author(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.author.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.author(class="form-control form-control-lg",placeholder="Separate Multiple Authors using ,")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.category.label}}
+            {% if form.category.errors%}
+                {{form.category(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.category.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.category(class="form-control form-control-lg",placeholder="Separate Multiple Categories using ,")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.language.label}}
+            {% if form.language.errors%}
+                {{form.language(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.language.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.language(class="form-control form-control-lg",placeholder="Book's Language")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.num_copies.label}}
+            {% if form.num_copies.errors%}
+                {{form.num_copies(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.num_copies.errors%}
+                        <span>{{error}}</span><br>
+                    {%endfor%}
+                </div>
+            {%else%}
+                {{form.num_copies(class="form-control form-control-lg",placeholder="Number of Copies being added")}}
+            {%endif%}
+        </div>
+        <div class="form-group">
+            {{form.submit(class="btn btn-info")}}
+        </div>
+    </form>
+</div>
+{%endblock%}

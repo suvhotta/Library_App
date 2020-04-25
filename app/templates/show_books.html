@@ -1,0 +1,46 @@
+{%extends"base.html"%}
+{%block content%}
+<div class="container">
+    <table id="books-table" class="table mt-4">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Category</th>
+            <th scope="col">Language</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+</div>
+
+
+
+
+
+<script>
+    fetch("http://127.0.0.1:5000/books").then(response =>{
+        return response.json()
+    }).then(function(data){
+        
+        const table = document.querySelector('.table')
+        let i=1
+        for (i;i<=data.length; i++) {
+            let new_row = table.insertRow(-1)
+            let index = new_row.insertCell(0)
+            index.textContent = i
+            let title = new_row.insertCell(1)
+            title.textContent = data[i-1]["title"]
+            let author = new_row.insertCell(2)
+            author.textContent = data[i-1]["author"]     
+            let Category = new_row.insertCell(3)
+            Category.textContent = data[i-1]["category"]
+            let Language = new_row.insertCell(4)
+            Language.textContent = data[i-1]["language"]
+}
+    })
+
+</script>
+{%endblock%}

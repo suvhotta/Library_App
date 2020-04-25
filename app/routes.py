@@ -1,14 +1,15 @@
-from flask import url_for, redirect, render_template, request, flash
-from app import app, bcrypt, db
+from flask import url_for, redirect, render_template, request, flash, jsonify
+from app import app, bcrypt, db, api
 from app.forms import (RegistrationForm, LoginForm, AccountUpdation, 
-UpdateProfile, RequestResetForm, ResetPasswordForm)
-from app.models import User
+UpdateProfile, RequestResetForm, ResetPasswordForm, AddNewBook)
+from app.models import User, Books, BookCopies, BooksSchema
 from sqlalchemy import or_, and_
 from flask_login import current_user, login_user, login_required, logout_user
 from datetime import timedelta
-import smtplib, inspect, os
+import smtplib, inspect, os, json
 from PIL import Image
 from threading import Thread
+from flask_restful import Resource, Api
 
 
 @app.route('/')
@@ -278,5 +279,66 @@ def reset_password(token):
         return redirect(url_for('login'))
     return render_template("reset_password.html", form=form)
 
-    
 
+def async_new_book_add(title,isbn,description,pages,author,category,language,num_copies):
+    new_book = Books()
+    new_book.title = title.strip()
+    new_book.isbn = isbn.strip()
+    new_book.description = description.strip()
+    new_book.pages = pages
+    authors = [author.strip() for author in author.split(",")]
+    categories = [category.strip() for category in category.split(",")]
+    new_book.author = authors
+    new_book.category = categories
+    new_book.language = language.strip()
+    new_book.num_copies = num_copies
+
+    db.session.add(new_book)
+    db.session.commit()
+
+    for _ in range(int(new_book.num_copies)):
+        new_copy = BookCopies()
+        new_copy.title = new_book.title
+        new_copy.book_id = new_book.id
+        new_book.copies.append(new_copy)
+        db.session.add(new_copy)
+        db.session.commit()
+
+@app.route("/add_books/new_book", methods=["GET", "POST"])  
+@login_required
+def add_new_book():
+    if current_user.role != "Librarian":
+        return redirect(url_for("index"))
+    
+    form = AddNewBook()
+    if form.validate_on_submit():
+        book_add_thread = Thread(target=async_new_book_add,args=[form.title.data,form.isbn.data,
+        form.description.data,form.pages.data,form.author.data,form.category.data,form.language.data,
+        form.num_copies.data])
+        book_add_thread.start()
+        flash("New Book has been added to the database successfully.","success")
+        return redirect(url_for("add_new_book"))
+    return render_template("add_new_book.html", form=form)
+
+
+# @app.route("/add_books/add_copies", methods=["GET", "POST"])  
+# @login_required
+# def add_book_copies():
+
+class Hello(Resource):
+    def __init__(self):
+        pass
+    
+    def get(self):
+        books = Books.query.all()
+        booksSchema = BooksSchema()
+        output = [booksSchema.dump(book) for book  in books]
+        # json.dumps(output)
+        return jsonify(output)
+
+api.add_resource(Hello,'/books')
+
+@login_required
+@app.route("/show_books",methods=["GET"])
+def show_books():
+    return render_template("show_books.html")

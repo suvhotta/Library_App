@@ -1,6 +1,8 @@
 from app import app, db, login_manager
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from datetime import datetime 
+from marshmallow_sqlalchemy import ModelSchema
 
 class Books(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -8,6 +10,8 @@ class Books(db.Model):
     isbn = db.Column(db.BigInteger, nullable=False)
     description = db.Column(db.String(300), default="New Book added")
     pages = db.Column(db.Integer, nullable=False)
+    #pickletype object stores python datatypes likes list using dumps and loads methods
+    #the objects are stored as binary objects in db, and while retrieving data, gives back list object
     author = db.Column(db.PickleType, nullable=False)
     category = db.Column(db.PickleType, nullable=False)
     language = db.Column(db.String(20), nullable=False)
@@ -16,11 +20,23 @@ class Books(db.Model):
     def __repr__(self):
         return f'<Book-title: {self.title} , ISBN:{self.isbn}>'
 
+
+
 class BookCopies(db.Model):
     book_copy_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
+    added_date = db.Column(db.DateTime,default=datetime.utcnow)
     #Defining the foreign key to connect the copies to the parent book table
     book_id = db.Column(db.Integer,db.ForeignKey('books.id'))
+    
+
+class BooksSchema(ModelSchema):
+    class Meta:
+        model = Books
+        
+class BookCopiesSchema(ModelSchema):
+    class Meta:
+        model = BookCopies
 
 
 class User(db.Model, UserMixin):

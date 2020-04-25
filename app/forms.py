@@ -1,9 +1,10 @@
-from flask_wtf import FlaskForm 
-from wtforms import BooleanField, SubmitField, StringField, PasswordField, SelectField, IntegerField
+from flask_wtf import FlaskForm
+from wtforms import BooleanField, SubmitField, StringField, PasswordField, SelectField, IntegerField, TextField, TextAreaField, FieldList
 from flask_wtf.file import FileAllowed, FileField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Regexp, NumberRange
 from app.models import User
 from flask_login import current_user
+import re
 
 
 class RegistrationForm(FlaskForm):
@@ -74,3 +75,22 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, message="Password should be atleast 4 characters long.")])
     confirm_pwd = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message="Should be same as the entered password.")])
     submit = SubmitField('Reset Password')
+
+
+class AddNewBook(FlaskForm):
+    title = StringField("Title", validators=[DataRequired(),Length(max=50, message="Please keep the title of the book restricted to 50 chars.")])
+    isbn = StringField("ISBN#",validators=[DataRequired()])
+    description = TextAreaField("Book Description", validators=[DataRequired(),Length(max=300)])
+    pages = IntegerField("Pages", validators=[NumberRange(min=1)])
+    author = StringField("Author(s)", validators=[DataRequired()])
+    category = StringField("Categories", validators=[DataRequired()])
+    language = StringField("Language", validators=[DataRequired(),Length(max=20)])
+    num_copies = IntegerField("Num of Copies", validators=[NumberRange(min=1, message="Minimum one copy should be added")])
+    submit = SubmitField("Add Book")
+
+    def validate_isbn(self, isbn):
+        if(not isbn.data.isnumeric()):
+            raise ValidationError("ISBN should be in numbers only.")
+
+        elif(len(isbn.data)!=10 and len(isbn.data)!=13):
+            raise ValidationError("ISBN should be of 10 or 13 digits only.")
