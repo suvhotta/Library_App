@@ -21,7 +21,6 @@ class Books(db.Model):
         return f'<Book-title: {self.title} , ISBN:{self.isbn}>'
 
 
-
 class BookCopies(db.Model):
     book_copy_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)

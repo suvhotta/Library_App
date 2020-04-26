@@ -94,3 +94,12 @@ class AddNewBook(FlaskForm):
 
         elif(len(isbn.data)!=10 and len(isbn.data)!=13):
             raise ValidationError("ISBN should be of 10 or 13 digits only.")
+
+class AddCopies(FlaskForm):
+    title = StringField("Title")
+    author = StringField("Author(s)")
+    category = StringField("Categories")
+    language = StringField("Language")
+    num_copies = IntegerField("Num of Copies Present")
+    add_copies = IntegerField("Add Copies", validators=[NumberRange(min=1, message="Minimum one copy should be added")])
+    submit = SubmitField("Add")

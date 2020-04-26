@@ -1,7 +1,7 @@
 from flask import url_for, redirect, render_template, request, flash, jsonify
 from app import app, bcrypt, db, api
 from app.forms import (RegistrationForm, LoginForm, AccountUpdation, 
-UpdateProfile, RequestResetForm, ResetPasswordForm, AddNewBook)
+UpdateProfile, RequestResetForm, ResetPasswordForm, AddNewBook, AddCopies)
 from app.models import User, Books, BookCopies, BooksSchema
 from sqlalchemy import or_, and_
 from flask_login import current_user, login_user, login_required, logout_user
@@ -197,7 +197,7 @@ def save_image_file(form_image_file):
 
     return picture_fn
 
-@app.route('/profile', methods=["GET","POST"])
+@app.route('/profile', methods=["GET", "POST"])
 @login_required
 def profile():
     form = UpdateProfile()
@@ -325,7 +325,7 @@ def add_new_book():
 # @login_required
 # def add_book_copies():
 
-class Hello(Resource):
+class ShowBooks(Resource):
     def __init__(self):
         pass
     
@@ -336,9 +336,59 @@ class Hello(Resource):
         # json.dumps(output)
         return jsonify(output)
 
-api.add_resource(Hello,'/books')
+api.add_resource(ShowBooks,'/books')
 
 @login_required
-@app.route("/show_books",methods=["GET"])
+@app.route("/show_books", methods=["GET"])
 def show_books():
     return render_template("show_books.html")
+
+def async_add_copies(book_name,added_copies):
+
+    book = Books.query.filter_by(title=book_name).first()
+    book.num_copies = book.num_copies+ added_copies
+    db.session.commit()
+    for _ in range(int(added_copies)):
+        new_copy = BookCopies()
+        new_copy.title = book.title
+        new_copy.book_id = book.id
+        book.copies.append(new_copy)
+        db.session.add(new_copy)
+        db.session.commit()
+
+@login_required
+@app.route("/add_copies/<book_name>", methods=["GET","POST"])
+@app.route("/add_copies/", defaults={"book_name":None}, methods=["GET"])
+def add_copies(book_name):
+    if current_user.role != "Librarian":
+        return redirect(url_for("index"))
+    
+    if(not book_name):
+        books = Books.query.all()
+        return render_template("add_copies.html", books=books)
+    else:
+        form = AddCopies()
+        if request.method=="GET":
+            book = Books.query.filter_by(title=book_name).first()
+            form.title.data = book.title
+            form.author.data = book.author
+            form.category.data = book.category
+            form.language.data = book.language
+            form.num_copies.data = book.num_copies
+            return render_template("add_copies_of_book.html", form=form)
+        else:
+            if form.validate_on_submit():
+                copy_add_thread = Thread(target=async_add_copies,args=(form.title.data,form.add_copies.data))
+                copy_add_thread.start()
+                flash(f'{form.add_copies} copies of {form.title.data} were successfully added.','success')
+                return redirect(url_for("add_copies"))
+
+
+class RemoveBook(Resource):
+    def delete(self):
+        output ={
+            'user':'sam'
+        }
+        return output
+
+api.add_resource(RemoveBook, '/remove_book')

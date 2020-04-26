@@ -1,0 +1,29 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <table id="books-table" class="table mt-4">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Add</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%if books%}
+                {%for book in books%}
+                <tr>
+                    <th scope="row">{{loop.index}}</th>
+                    <td>{{book["title"]}}</td>
+                    <td>{{book["author"]}}</td>
+                    <td>
+                        <a href="{{url_for('add_copies',book_name=book['title'])}}"><button class="btn btn-info">Add Copies</button></a>
+                    </td>
+                </tr>
+                {%endfor%}
+            {%endif%}
+        </tbody>
+    </table>
+</div>
+{%endblock%}
