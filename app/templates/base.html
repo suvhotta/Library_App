@@ -37,7 +37,7 @@
               {%if current_user.role == 'Librarian'%}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle top-bar" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Manage Accounts
+                    Manage Users
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{url_for('manage_accounts_add')}}">Add Users</a>
@@ -47,13 +47,22 @@
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle top-bar" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Add Books
+                    Manage Books
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{url_for('add_new_book')}}">Add New Book</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{url_for('add_copies')}}">Add Copies</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{url_for('delete_books')}}">Delete Books</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{url_for('delete_books_copies')}}">Delete Copies of Books</a>
                   </div>
+                </li>
+                {%endif%}
+                {%if current_user.is_authenticated%}
+                <li class="nav-item active">
+                  <a class="nav-link top-bar"  href="{{url_for('issue_books')}}">Issue Books</a>
                 </li>
                 {%endif%}
             </ul>

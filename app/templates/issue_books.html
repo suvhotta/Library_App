@@ -1,0 +1,37 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container mt-2">
+    <table id="books-table" class="table mt-4">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Copy ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Issue Status</th>
+            <th scope="col">Date book was Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%if bookcopies%}
+                {%for book in bookcopies%}
+                    {%if book["issue_status"]=="Available"%}
+                    <form action="" method="POST">
+                        <tr>
+                            <th scope="row">{{loop.index}}</th>
+                            <td>{{book["book_copy_id"]}}</td>
+                            <input type="hidden" name="book_id" value="{{book['book_copy_id']}}" />
+                            <td>{{book["title"]}}</td>
+                            <td>{{book["issue_status"]}}</td>
+                            <td>{{book["added_date"]}}</td>        
+                            <td>
+                                <a href="{{url_for('issue_books')}}"><button type="submit" class="btn btn-info">Issue</button></a>
+                            </td>
+                        </tr>
+                    </form>
+                    {%endif%}
+                {%endfor%}
+            {%endif%}
+        </tbody>
+    </table>
+</div>
+{%endblock%}

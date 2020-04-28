@@ -80,7 +80,7 @@ class ResetPasswordForm(FlaskForm):
 class AddNewBook(FlaskForm):
     title = StringField("Title", validators=[DataRequired(),Length(max=50, message="Please keep the title of the book restricted to 50 chars.")])
     isbn = StringField("ISBN#",validators=[DataRequired()])
-    description = TextAreaField("Book Description", validators=[DataRequired(),Length(max=300)])
+    description = TextAreaField("Book Description", validators=[DataRequired(),Length(max=1000)])
     pages = IntegerField("Pages", validators=[NumberRange(min=1)])
     author = StringField("Author(s)", validators=[DataRequired()])
     category = StringField("Categories", validators=[DataRequired()])

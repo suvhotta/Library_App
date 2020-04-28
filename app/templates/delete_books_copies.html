@@ -1,0 +1,32 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container mt-2">
+    <table id="books-table" class="table mt-4">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Copy ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Issue Status</th>
+            <th scope="col">Date book was Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%if bookcopies%}
+                {%for book in bookcopies%}
+                <tr>
+                    <th scope="row">{{loop.index}}</th>
+                    <td >{{book["book_copy_id"]}}</td>
+                    <td>{{book["title"]}}</td>
+                    <td>{{book["issue_status"]}}</td>
+                    <td>{{book["added_date"]}}</td>        
+                    <td>
+                        <a href="{{url_for('delete_books_copies',book_id=book['book_copy_id'])}}"><button class="btn btn-danger">Delete</button></a>
+                    </td>
+                </tr>
+                {%endfor%}
+            {%endif%}
+        </tbody>
+    </table>
+</div>
+{%endblock%}

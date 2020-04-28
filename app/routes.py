@@ -2,7 +2,7 @@ from flask import url_for, redirect, render_template, request, flash, jsonify
 from app import app, bcrypt, db, api
 from app.forms import (RegistrationForm, LoginForm, AccountUpdation, 
 UpdateProfile, RequestResetForm, ResetPasswordForm, AddNewBook, AddCopies)
-from app.models import User, Books, BookCopies, BooksSchema
+from app.models import User, Books, BookCopies, BooksSchema, BooksIssued
 from sqlalchemy import or_, and_
 from flask_login import current_user, login_user, login_required, logout_user
 from datetime import timedelta
@@ -378,17 +378,73 @@ def add_copies(book_name):
             return render_template("add_copies_of_book.html", form=form)
         else:
             if form.validate_on_submit():
-                copy_add_thread = Thread(target=async_add_copies,args=(form.title.data,form.add_copies.data))
+                copy_add_thread = Thread(target = async_add_copies, args=(form.title.data,form.add_copies.data))
                 copy_add_thread.start()
                 flash(f'{form.add_copies} copies of {form.title.data} were successfully added.','success')
                 return redirect(url_for("add_copies"))
 
+        return redirect(url_for("add_copies"))
+@login_required
+@app.route('/delete_books/<book_name>',methods=["GET"])
+@app.route('/delete_books/', methods=["GET"],defaults={"book_name":None})
+def delete_books(book_name):
+    
+    if(current_user.role != "Librarian"):
+        return redirect(url_for("index"))
+    
+    if(not book_name):
+        books = Books.query.all()
+        return render_template("delete_books.html", books=books,)
+    else:
+        book = Books.query.filter_by(title=book_name).first()
+        if(book):
+            db.session.delete(book)
+            db.session.commit()
+            flash(f'Book : {book.title} has been deleted', "success")
+            return redirect( url_for("delete_books"))
+        else:
+            return redirect( url_for("delete_books"))
 
-class RemoveBook(Resource):
-    def delete(self):
-        output ={
-            'user':'sam'
-        }
-        return output
+    return redirect(url_for("delete_books"))
 
-api.add_resource(RemoveBook, '/remove_book')
+@login_required
+@app.route('/delete_books_copies/<book_id>',methods=["GET"])
+@app.route('/delete_books_copies/', methods=["GET"],defaults={"book_id":None})
+def delete_books_copies(book_id):
+    if(current_user.role != "Librarian"):
+        return redirect(url_for("index"))
+    
+    if(not book_id):
+        bookcopies = BookCopies.query.all()
+        return render_template("delete_books_copies.html", bookcopies=bookcopies)
+
+    else:
+        book = BookCopies.query.filter_by(book_copy_id=book_id).first()
+        if(book):
+            if(Books.query.filter_by(title=book.title).first().num_copies == 1):
+                book = Books.query.filter_by(title=book.title).first()
+                db.session.delete(book)
+                db.session.commit()
+                return redirect( url_for("delete_books_copies"))
+            else:
+                
+                Books.query.filter_by(title=book.title).first().num_copies -= 1
+                db.session.delete(book)
+                db.session.commit() 
+        else:
+            return redirect( url_for("delete_books_copies"))
+
+    return redirect(url_for("delete_books_copies"))
+
+@login_required
+@app.route("/issue_books",methods=["GET","POST"])
+def issue_books():
+    if(request.method == "GET"):
+        bookcopies = BookCopies.query.all()
+        return render_template("issue_books.html", bookcopies=bookcopies)
+    if(request.method=="POST"):
+        book_id = request.form["book_id"]
+        
+        return redirect(url_for("issue_books")) 
+
+    return redirect(url_for("issue_books"))

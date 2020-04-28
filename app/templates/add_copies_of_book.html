@@ -26,14 +26,14 @@
         <div class="form-group">
             {{form.add_copies.label}}
             {% if form.add_copies.errors%}
-                {{form.add_copies(class="form-control form-control-lg is-invalid")}}
+                {{form.add_copies(class="form-control form-control-lg is-invalid",type="number",min="1")}}
                 <div class="invalid-feedback">
                     {%for error in form.add_copies.errors%}
                         <span>{{error}}</span>
                     {%endfor%}
                 </div>
             {%else%}
-                {{form.add_copies(class="form-control form-control-lg",placeholder="Add num of copies")}}
+                {{form.add_copies(class="form-control form-control-lg",type="number" ,min="1",placeholder="Add num of copies")}}
             {%endif%}
         </div>
         <div class="form-group">
