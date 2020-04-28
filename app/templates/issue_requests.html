@@ -1,0 +1,38 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Book ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Issuer</th>
+            <th scope="col">State</th>
+            <th scope="col">BookIssue ID</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {%if requests%}
+                {%for request in requests%} 
+                    <form action="" method="POST">
+                        <tr>
+                            <th>{{loop.index}}</th>
+                            <th>{{request["issued_book_id"]}}</th>
+                            <input type="hidden" name="issue_request_id" value="{{request['id']}}">
+                            <th>{{request["title"]}}</th>
+                            <th>{{request["issuer_name"]}}</th>
+                            <th>{{request["issue_state"]}}</th>
+                            <th>{{request["id"]}}</th>
+                            <th class="p-0 pt-2"><a href="{{url_for('librarian_issue_requests')}}"><button name="submit_button" value="deny" type="submit" class="btn btn-danger p-1">Deny</button></a></th>
+                            <th class="p-0 pt-2"><a href="{{url_for('librarian_issue_requests')}}"><button name="submit_button" value="approve" type="submit" class="btn btn-success p-1">Approve</button></a></th>
+                        </tr>
+                    </form>
+                {%endfor%}
+            {%endif%}
+        </tbody>
+    </table>
+</div>
+{%endblock%}

@@ -1,0 +1,36 @@
+{%extends "base.html"%}
+{%block content%}
+<div class="container mt-2">
+    {%if books%}
+    <table class="table  mt-4">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Book ID</th>
+            <th scope="col">Date of Issue</th>
+            <th scope="col">Expected Return Date</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+                {%for book in books%}
+                <form action="" method="POST">
+                    <tr>
+                        <th scope="row">{{loop.index}}</th>
+                        <td>{{book["title"]}}</td>
+                        <input type="hidden" name="book_id" value="{{book['id']}}"/>
+                        <td>{{book["issued_book_id"]}}</td>
+                        <td>{{book["issue_date"]}}</td>
+                        <td>{{book["expected_return_date"]}}</td>
+                        <td><a href="{{url_for('return_books')}}"><button type="submit" class="btn btn-info">Return</button></a></td>
+                    </tr>
+                </form>
+                {%endfor%}
+        </tbody>
+    </table>
+    {%else%}
+    <p>You've not issued Any Book.</p>
+    {%endif%}
+</div>
+{%endblock%}

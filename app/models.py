@@ -24,15 +24,14 @@ class BooksIssued(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     issuer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    issued_book_id = db.Column(db.Integer,db.ForeignKey("book_copies.book_copy_id"))
-    issue_state = db.Column(db.String(12),default="Pending")
-    issue_date = db.Column(db.Date,default=date.today)
-    expected_return_date = db.Column(db.Date,default=(date.today()+timedelta(days=14)))
+    issuer_name = db.Column(db.String(30),nullable=False)
+    issued_book_id = db.Column(db.Integer, db.ForeignKey("book_copies.book_copy_id"))
+    issue_state = db.Column(db.String(12), default="Pending")
+    issue_date = db.Column(db.Date)
+    expected_return_date = db.Column(db.Date)
     actual_return_date = db.Column(db.Date)
     fine = db.Column(db.Integer, default=0)
 
-    def __repr__(self):
-        return f'Book:{self.title} (ID:{self.book_id}) issued to {issuer_name}(ID:{issuer_id}) on {issue_date}'
 
 class BookCopies(db.Model):
     book_copy_id = db.Column(db.Integer, primary_key=True)
@@ -61,7 +60,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(10), nullable=False)
     image_file = db.Column(db.String(40), nullable=False, default="default.jpg")
     fine = db.Column(db.Integer, default=0, nullable=False)
-    account_state = db.Column(db.String(10),default='disabled', nullable=False)
+    account_state = db.Column(db.String(10), default='disabled', nullable=False)
     issued_books = db.relationship("BooksIssued", backref='issuer',cascade="all,delete-orphan", lazy="dynamic")
 
     def __repr__(self):

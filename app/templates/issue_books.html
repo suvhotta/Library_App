@@ -14,7 +14,6 @@
         <tbody>
             {%if bookcopies%}
                 {%for book in bookcopies%}
-                    {%if book["issue_status"]=="Available"%}
                     <form action="" method="POST">
                         <tr>
                             <th scope="row">{{loop.index}}</th>
@@ -28,7 +27,6 @@
                             </td>
                         </tr>
                     </form>
-                    {%endif%}
                 {%endfor%}
             {%endif%}
         </tbody>

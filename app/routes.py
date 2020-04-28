@@ -10,7 +10,7 @@ import smtplib, inspect, os, json
 from PIL import Image
 from threading import Thread
 from flask_restful import Resource, Api
-
+from datetime import date
 
 @app.route('/')
 def index():
@@ -102,29 +102,6 @@ def manage_accounts_add(username):
                 flash(f'Account for User : <{user.username}> has been activated.', "success")
             return redirect(url_for("manage_accounts_add", username=None))
 
-# @app.route("/manage_accounts/add_user/<username>", methods=['GET', 'POST'])
-# @login_required
-# def add_user_to_library(username):
-#     form = AccountUpdation()
-#     if(request.method == "GET"):
-#         user = User.query.filter_by(username=username).first()
-#         if(user.account_state == "disabled"):
-#             form.username.data = user.username
-#             form.name.data = user.name
-#             form.role.data = user.role
-#             form.email.data = user.email
-#             form.account_state.data = user.account_state
-#             form.fine.data = user.fine
-#             return render_template('add_user_to_library.html', form=form)
-#     else:
-#         user = User.query.filter_by(username=form.username.data).first()
-#         user.role = form.role.data
-#         user.fine = form.fine.data
-#         user.account_state = form.account_state.data
-#         db.session.commit()
-#         if(form.account_state.data == "enabled"):
-#             flash(f'Account for User : <{user.username}> has been activated.', "success")
-#         return render_template(url_for("manage_accounts_add_user"))
 
 @app.route('/manage_accounts/remove_user/<username>', methods=["GET", "POST"])
 @app.route('/manage_accounts/remove_user/', defaults={"username":None})
@@ -343,6 +320,7 @@ api.add_resource(ShowBooks,'/books')
 def show_books():
     return render_template("show_books.html")
 
+
 def async_add_copies(book_name,added_copies):
 
     book = Books.query.filter_by(title=book_name).first()
@@ -355,6 +333,7 @@ def async_add_copies(book_name,added_copies):
         book.copies.append(new_copy)
         db.session.add(new_copy)
         db.session.commit()
+
 
 @login_required
 @app.route("/add_copies/<book_name>", methods=["GET","POST"])
@@ -407,6 +386,7 @@ def delete_books(book_name):
 
     return redirect(url_for("delete_books"))
 
+
 @login_required
 @app.route('/delete_books_copies/<book_id>',methods=["GET"])
 @app.route('/delete_books_copies/', methods=["GET"],defaults={"book_id":None})
@@ -420,7 +400,7 @@ def delete_books_copies(book_id):
 
     else:
         book = BookCopies.query.filter_by(book_copy_id=book_id).first()
-        if(book):
+        if(book.issue_status == "Available"):
             if(Books.query.filter_by(title=book.title).first().num_copies == 1):
                 book = Books.query.filter_by(title=book.title).first()
                 db.session.delete(book)
@@ -432,19 +412,118 @@ def delete_books_copies(book_id):
                 db.session.delete(book)
                 db.session.commit() 
         else:
+            flash("Book has been issued. Can't be deleted now.","danger")
             return redirect( url_for("delete_books_copies"))
 
     return redirect(url_for("delete_books_copies"))
 
+
 @login_required
-@app.route("/issue_books",methods=["GET","POST"])
+@app.route("/issue_books", methods=["GET", "POST"])
 def issue_books():
     if(request.method == "GET"):
-        bookcopies = BookCopies.query.all()
+        bookcopies = BookCopies.query.filter_by(issue_status="Available").all()
         return render_template("issue_books.html", bookcopies=bookcopies)
+
     if(request.method=="POST"):
         book_id = request.form["book_id"]
-        
+        issuer = current_user.id
+        book = BookCopies.query.filter_by(book_copy_id=book_id).first()
+        book_issue = BooksIssued()
+        book_issue.issuer_id = current_user.id
+        book_issue.title = book.title
+        book_issue.issuer_name = current_user.name
+        book_issue.issued_book_id = book_id
+        book.issue_status = "Pending"
+        db.session.add(book_issue)
+        db.session.commit()
+        flash(f"You're issue request has been passed on to the Librarian.", "info")
         return redirect(url_for("issue_books")) 
 
     return redirect(url_for("issue_books"))
+
+
+@login_required
+@app.route("/issue_requests",methods=["GET","POST"])
+def librarian_issue_requests():
+    if(current_user.role != "Librarian"):
+        return redirect(url_for("index"))
+
+    if(request.method == "GET"):
+        issue_requests = BooksIssued.query.filter_by(issue_state = "Pending")
+        return render_template("issue_requests.html",requests = issue_requests)
+
+    if(request.method == "POST"):
+        if(request.form["submit_button"]== "deny"):
+            request_id = request.form["issue_request_id"]
+            requested_book = BooksIssued.query.filter_by(id = request_id).first()
+            requested_book.issue_state = "Denied"
+            requested_book.issue_date = None
+            requested_book.expected_return_date = None
+            bookCopy = BookCopies.query.filter_by(book_copy_id=requested_book.issued_book_id).first()
+            bookCopy.issue_status = "Available"
+            bookCopy.book_issue_id.remove(requested_book)
+            issuer = User.query.filter_by(id = requested_book.issuer_id).first()
+            db.session.commit()
+            return redirect(url_for('librarian_issue_requests'))
+        if(request.form["submit_button"]=="approve"):
+            request_id = request.form["issue_request_id"]
+            requested_book = BooksIssued.query.filter_by(id = request_id).first()
+            requested_book.issue_state = "Issued"
+            requested_book.issue_date = date.today()
+            print(requested_book.issue_date)
+            requested_book.expected_return_date = date.today()+timedelta(days=14)
+            bookCopy = BookCopies.query.filter_by(book_copy_id=requested_book.issued_book_id).first()
+            bookCopy.issue_status = "Issued"
+            db.session.commit()
+            flash("Book Issue has been approved.",'info')
+            requested_book = BooksIssued.query.filter_by(id = request_id).first()
+            print(requested_book.issue_date)
+            return redirect(url_for('librarian_issue_requests'))
+
+
+@login_required
+@app.route("/return_requests",methods=["GET","POST"])
+def librarian_return_requests():
+    if(current_user.role != "Librarian"):
+        return redirect(url_for("index"))
+
+    if(request.method == "GET"):
+        issue_requests = BooksIssued.query.filter_by(issue_state = "to return")
+        return render_template("return_requests.html",requests = issue_requests)
+
+    if(request.method == "POST"):
+        request_id = request.form["return_request_id"]
+        requested_book = BooksIssued.query.filter_by(id = request_id).first()
+        requested_book.issue_state = "returned"
+        requested_book.actual_return_date = date.today()
+        fine = 5*(requested_book.actual_return_date-requested_book.expected_return_date).days
+        requested_book.fine = fine
+        bookCopy = BookCopies.query.filter_by(book_copy_id=requested_book.issued_book_id).first()
+        bookCopy.issue_status = "Available"
+        bookCopy.book_issue_id.remove(requested_book)
+        issuer = User.query.filter_by(id = requested_book.issuer_id).first()
+        issuer.fine+=fine
+        issuer.issued_books.remove(requested_book)
+        issuer
+        db.session.commit()
+        return redirect(url_for("librarian_return_requests"))
+
+    return redirect(url_for("librarian_return_requests"))
+
+
+@login_required
+@app.route("/return_books", methods=["GET", "POST"])
+def return_books():
+    if(request.method == "GET"):
+        books = current_user.issued_books.filter_by(issue_state = "Issued").all()
+        return render_template("return_books.html",books=books)
+    
+    if(request.method == "POST"):
+        return_book_id = request.form["book_id"]
+        requested_book = BooksIssued.query.filter_by(id = return_book_id).first()
+        requested_book.issue_state = "to return"
+        requested_book.actual_return_date = date.today()
+        db.session.commit()
+        return redirect(url_for('return_books'))
+    return redirect(url_for('return_books'))
