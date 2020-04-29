@@ -364,8 +364,8 @@ def add_copies(book_name):
 
         return redirect(url_for("add_copies"))
 @login_required
-@app.route('/delete_books/<book_name>',methods=["GET"])
-@app.route('/delete_books/', methods=["GET"],defaults={"book_name":None})
+@app.route('/delete_books/<book_name>', methods=["GET"])
+@app.route('/delete_books/', methods=["GET"], defaults={"book_name":None})
 def delete_books(book_name):
     
     if(current_user.role != "Librarian"):
